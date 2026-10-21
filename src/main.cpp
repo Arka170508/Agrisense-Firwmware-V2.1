@@ -36,7 +36,7 @@ constexpr char MQTT_CONFIG_TOPIC[] = "agrisense/iot/config";
 constexpr char PREFERENCES_NAMESPACE[] = "agrisense";
 constexpr char WIFI_PREFERENCES_NAMESPACE[] = "wifi-config";
 constexpr char WIFI_AP_SSID[] = "AgriSense-Setup";
-constexpr char WIFI_AP_PASSWORD[] = "agrisense";
+constexpr char WIFI_AP_PASSWORD[] = "Agrisense";
 
 // Isi tiga nilai ini setelah URL repo dan nama asset release GitHub tersedia.
 constexpr char GITHUB_REPOSITORY_OWNER[] = "Arka170508";
