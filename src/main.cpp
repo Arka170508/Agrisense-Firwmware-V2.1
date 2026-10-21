@@ -39,8 +39,8 @@ constexpr char WIFI_AP_SSID[] = "AgriSense-Setup";
 constexpr char WIFI_AP_PASSWORD[] = "agrisense";
 
 // Isi tiga nilai ini setelah URL repo dan nama asset release GitHub tersedia.
-constexpr char GITHUB_REPOSITORY_OWNER[] = "ISI_OWNER_REPO";
-constexpr char GITHUB_REPOSITORY_NAME[] = "ISI_NAMA_REPO";
+constexpr char GITHUB_REPOSITORY_OWNER[] = "Arka170508";
+constexpr char GITHUB_REPOSITORY_NAME[] = "agrisense-firmware";
 constexpr char GITHUB_FIRMWARE_ASSET[] = "firmware.bin";
 constexpr char GITHUB_ROOT_CA[] PROGMEM = R"PEM(
 -----BEGIN CERTIFICATE-----
