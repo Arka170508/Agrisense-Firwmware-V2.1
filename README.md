@@ -58,21 +58,25 @@ kirim data sensitif atau konfigurasi penting.
 
 ## OTA GitHub Releases
 
-Isi konstanta berikut di `src/main.cpp`:
+Workflow GitHub Actions di `.github/workflows/release-firmware.yml` membuat
+firmware dan GitHub Release secara otomatis ketika tag versi baru di-push.
+Workflow mengatur versi firmware dari tag, mengisi owner/nama repo dari GitHub,
+dan melampirkan binary dengan nama `firmware.bin`.
 
-```cpp
-GITHUB_REPOSITORY_OWNER
-GITHUB_REPOSITORY_NAME
-GITHUB_FIRMWARE_ASSET
+Setelah workflow sudah ada pada branch default, buat tag semver baru (misalnya
+`v2.0.1`) lalu push tag tersebut:
+
+```sh
+git tag v2.0.1
+git push origin v2.0.1
 ```
 
-Buat GitHub Release dengan tag versi semver lebih baru dari `FW_VERSION`
-(contoh `v2.0.2`) dan lampirkan file firmware dengan nama asset yang sama dengan
-`GITHUB_FIRMWARE_ASSET` (default `firmware.bin`). Binary PlatformIO dapat
-ditemukan di `.pio/build/esp32-s3-devkitc-1/firmware.bin`. Firmware memeriksa
-release terbaru setiap 6 jam saat Wi-Fi tersambung, membandingkan versi, lalu
-mengunduh asset melalui HTTPS dengan bundle CA bawaan ESP32. Pastikan release
-berisi binary untuk board dan partition layout yang sama.
+Pantau hasilnya di tab **Actions**. Jika build berhasil, release versi itu akan
+muncul di **Releases**. Firmware memeriksa release terbaru setiap 6 jam saat
+Wi-Fi tersambung, membandingkan versi, lalu mengunduh asset melalui HTTPS
+dengan bundle CA bawaan ESP32. Untuk unduhan OTA tanpa autentikasi, repo harus
+bersifat **Public**. Pastikan release berisi binary untuk board dan partition
+layout yang sama.
 
 ## Build dan upload
 

@@ -1,0 +1,70 @@
+name: Build and release firmware
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install PlatformIO
+        run: python -m pip install platformio
+
+      - name: Set firmware version and OTA repository
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+          REPOSITORY_SLUG: ${{ github.repository }}
+        run: |
+          python - <<'PY'
+          import os
+          import re
+          from pathlib import Path
+
+          tag = os.environ["RELEASE_TAG"]
+          if not re.fullmatch(r"v\d+\.\d+\.\d+", tag):
+              raise SystemExit(f"Release tag must use vMAJOR.MINOR.PATCH, got: {tag}")
+
+          owner, repository = os.environ["REPOSITORY_SLUG"].split("/", 1)
+          source_path = Path("src/main.cpp")
+          source = source_path.read_text(encoding="utf-8")
+
+          replacements = (
+              (r'(constexpr char FW_VERSION\[\] = ")[^"]+(";\s*)',
+               rf"\g<1>{tag[1:]}\g<2>"),
+              (r'(constexpr char GITHUB_REPOSITORY_OWNER\[\] = ")[^"]+(";\s*)',
+               rf"\g<1>{owner}\g<2>"),
+              (r'(constexpr char GITHUB_REPOSITORY_NAME\[\] = ")[^"]+(";\s*)',
+               rf"\g<1>{repository}\g<2>"),
+          )
+          for pattern, replacement in replacements:
+              source, count = re.subn(pattern, replacement, source, count=1)
+              if count != 1:
+                  raise SystemExit(f"Could not update firmware configuration: {pattern}")
+
+          source_path.write_text(source, encoding="utf-8")
+          PY
+
+      - name: Build firmware
+        run: pio run
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            .pio/build/esp32-s3-devkitc-1/firmware.bin \
+            --title "Firmware $GITHUB_REF_NAME" \
+            --generate-notes
