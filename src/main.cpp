@@ -681,6 +681,7 @@ void checkForFirmwareUpdate() {
   Serial.printf("[OTA] Memasang firmware %s dari GitHub Releases...\n",
                 latestVersion.c_str());
   httpUpdater.rebootOnUpdate(true);
+  httpUpdater.setFollowRedirects(HTTPC_STRICT_FOLLOW_REDIRECTS);
   httpUpdater.onProgress([](int progress, int total) {
     esp_task_wdt_reset();
     if (total > 0) {
