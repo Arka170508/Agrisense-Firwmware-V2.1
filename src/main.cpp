@@ -42,6 +42,7 @@ constexpr char WIFI_AP_PASSWORD[] = "Agrisense";
 constexpr char GITHUB_REPOSITORY_OWNER[] = "Arka170508";
 constexpr char GITHUB_REPOSITORY_NAME[] = "agrisense-firmware";
 constexpr char GITHUB_FIRMWARE_ASSET[] = "firmware.bin";
+// Retain the previous R36 CA and add the E46 root used by GitHub's current chain.
 constexpr char GITHUB_ROOT_CA[] PROGMEM = R"PEM(
 -----BEGIN CERTIFICATE-----
 MIIGTDCCBDSgAwIBAgIQOXpmzCdWNi4NqofKbqvjsTANBgkqhkiG9w0BAQwFADBf
@@ -78,6 +79,20 @@ WrZhFZLjEkhp7fFXf9r32rNPfb74X/U90Bdy4lzp3+X1ukh1BuMxA/EEhDoTOS3l
 7ABvc7BYSQubQ2490OcdkIzUh3ZwDrakMVrbaTxUM2p24N6dB+ns2zptWCva6jzW
 r8IWKIMxzxLPv5Kt3ePKcUdvkBU/smqujSczTzzSjIoR5QqQA6lN1ZRSnuHIWCvh
 JEltkYnTAH41QJ6SAWO66GrrUESwN/cgZzL4JLEqz1Y=
+-----END CERTIFICATE-----
+-----BEGIN CERTIFICATE-----
+MIICOjCCAcGgAwIBAgIQQvLM2htpN0RfFf51KBC49DAKBggqhkjOPQQDAzBfMQsw
+CQYDVQQGEwJHQjEYMBYGA1UEChMPU2VjdGlnbyBMaW1pdGVkMTYwNAYDVQQDEy1T
+ZWN0aWdvIFB1YmxpYyBTZXJ2ZXIgQXV0aGVudGljYXRpb24gUm9vdCBFNDYwHhcN
+MjEwMzIyMDAwMDAwWhcNNDYwMzIxMjM1OTU5WjBfMQswCQYDVQQGEwJHQjEYMBYG
+A1UEChMPU2VjdGlnbyBMaW1pdGVkMTYwNAYDVQQDEy1TZWN0aWdvIFB1YmxpYyBT
+ZXJ2ZXIgQXV0aGVudGljYXRpb24gUm9vdCBFNDYwdjAQBgcqhkjOPQIBBgUrgQQA
+IgNiAAR2+pmpbiDt+dd34wc7qNs9Xzjoq1WmVk/WSOrsfy2qw7LFeeyZYX8QeccC
+WvkEN/U0NSt3zn8gj1KjAIns1aeibVvjS5KToID1AZTc8GgHHs3u/iVStSBDHBv+
+6xnOQ6OjQjBAMB0GA1UdDgQWBBTRItpMWfFLXyY4qp3W7usNw/upYTAOBgNVHQ8B
+Af8EBAMCAYYwDwYDVR0TAQH/BAUwAwEB/zAKBggqhkjOPQQDAwNnADBkAjAn7qRa
+qCG76UeXlImldCBteU/IvZNeWBj7LRoAasm4PdCkT0RHlAFWovgzJQxC36oCMB3q
+4S6ILuH5px0CMk7yn2xVdOOurvulGu7t0vzCAxHrRVxgED1cf5kDW21USAGKcw==
 -----END CERTIFICATE-----
 )PEM";
 
@@ -593,7 +608,7 @@ bool isNewerFirmware(const String& candidate) {
 }
 
 void checkForFirmwareUpdate() {
-  if (WiFi.status() != WL_CONNECTED ||
+  if (WiFi.status() != WL_CONNECTED || !rtcSynced ||
       strcmp(GITHUB_REPOSITORY_OWNER, "ISI_OWNER_REPO") == 0 ||
       strcmp(GITHUB_REPOSITORY_NAME, "ISI_NAMA_REPO") == 0) {
     return;
