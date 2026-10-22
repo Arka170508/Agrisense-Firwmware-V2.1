@@ -31,6 +31,7 @@ jobs:
           python - <<'PY'
           import os
           import re
+          import shutil
           from pathlib import Path
 
           tag = os.environ["RELEASE_TAG"]
@@ -38,7 +39,8 @@ jobs:
               raise SystemExit(f"Release tag must use vMAJOR.MINOR.PATCH, got: {tag}")
 
           owner, repository = os.environ["REPOSITORY_SLUG"].split("/", 1)
-          source_path = Path("src/main.cpp")
+          source_path = Path("src/secret.h")
+          shutil.copyfile("src/secret.example.h", source_path)
           source = source_path.read_text(encoding="utf-8")
 
           replacements = (

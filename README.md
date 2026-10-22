@@ -20,14 +20,26 @@ watchdog, dan pemeriksaan OTA dari GitHub Releases.
 
 ## Wi-Fi custom
 
+Konfigurasi yang dapat berbeda antar perangkat disimpan di `src/secret.h`.
+Salin template lalu ubah nilai password AP dan konfigurasi lain sesuai
+kebutuhan:
+
+```powershell
+Copy-Item src\secret.example.h src\secret.h
+```
+
+`src/secret.h` diabaikan oleh Git agar konfigurasi lokal tidak ikut
+ter-commit; jangan masukkan kredensial produksi ke template.
+
 Saat boot, perangkat mencoba kredensial yang tersimpan di NVS. Bila belum
 terhubung, portal konfigurasi MAKERINDO membuka access point
 `AgriSense-Setup`; hubungkan ponsel ke AP itu dan buka `http://192.168.4.1`.
 Portal berhenti saat koneksi berhasil dan tersedia lagi setelah koneksi
 terputus.
 
-Ganti `WIFI_AP_PASSWORD` di `src/main.cpp` dengan password unik sebelum
-deployment. Password AP saat ini hanya nilai contoh.
+Ganti `WIFI_AP_PASSWORD` di `src/secret.h` dengan password unik sebelum
+deployment. Isi `MQTT_USERNAME` dan `MQTT_PASSWORD` bersama-sama bila broker
+menggunakan autentikasi; biarkan keduanya kosong untuk koneksi anonim.
 
 ## Sensor, RTOS, dan watchdog
 

@@ -24,24 +24,15 @@
 #include <cstdio>
 #include <cstring>
 
+#include "secret.h"
+
 namespace {
 
-constexpr char FW_NAME[] = "AgriSense V2.0 MQTT";
-constexpr char FW_VERSION[] = "2.0.0";
-constexpr char DEVICE_ID[] = "AGRISENSE-CC-004";
-constexpr char MQTT_BROKER[] = "broker.emqx.io";
-constexpr uint16_t MQTT_PORT = 1883;
-constexpr char MQTT_TOPIC[] = "agrisense/iot/readings";
-constexpr char MQTT_CONFIG_TOPIC[] = "agrisense/iot/config";
+using namespace secrets;
+
 constexpr char PREFERENCES_NAMESPACE[] = "agrisense";
 constexpr char WIFI_PREFERENCES_NAMESPACE[] = "wifi-config";
-constexpr char WIFI_AP_SSID[] = "AgriSense-Setup";
-constexpr char WIFI_AP_PASSWORD[] = "Agrisense";
 
-// Isi tiga nilai ini setelah URL repo dan nama asset release GitHub tersedia.
-constexpr char GITHUB_REPOSITORY_OWNER[] = "Arka170508";
-constexpr char GITHUB_REPOSITORY_NAME[] = "Agrisense-Firwmware-V2.1";
-constexpr char GITHUB_FIRMWARE_ASSET[] = "firmware.bin";
 // CA certificates used by GitHub's API and redirected release asset hosts.
 constexpr char GITHUB_ROOT_CA[] PROGMEM = R"PEM(
 -----BEGIN CERTIFICATE-----
@@ -559,7 +550,17 @@ void connectMqttIfNeeded() {
   snprintf(clientId, sizeof(clientId), "AGRISENSE-%06llX",
            static_cast<unsigned long long>(ESP.getEfuseMac() & 0xFFFFFF));
   Serial.printf("[MQTT] Menghubungkan ke %s:%u...\n", MQTT_BROKER, MQTT_PORT);
-  if (!mqttClient.connect(clientId)) {
+  const bool hasMqttUsername = MQTT_USERNAME[0] != '\0';
+  const bool hasMqttPassword = MQTT_PASSWORD[0] != '\0';
+  if (hasMqttUsername != hasMqttPassword) {
+    logError("MQTT_USERNAME dan MQTT_PASSWORD harus diisi berpasangan.");
+    return;
+  }
+  const bool connected =
+      hasMqttUsername ? mqttClient.connect(clientId, MQTT_USERNAME,
+                                           MQTT_PASSWORD)
+                      : mqttClient.connect(clientId);
+  if (!connected) {
     Serial.printf("[MQTT] Gagal terhubung, state=%d\n", mqttClient.state());
     return;
   }
